@@ -23,6 +23,9 @@ class Enemy {
 
 public class FairyFactionRPG {
 
+    public static final String LOCATION_TOWN = "AbandonedTown";
+    public static final String LOCATION_FOREST = "Forest";
+
     public static void main(String[] args){
         Scanner scanner = new Scanner(System.in);
         Player player = null;
@@ -75,47 +78,77 @@ public class FairyFactionRPG {
     
     public static void gameLogic(Player player, Scanner scanner) {
         Random random = new Random();
-        
+
+        String playerLocation = LOCATION_TOWN;
+
         while (player.health > 0){
-            System.out.println("\n---------------------------------------------");
-            System.out.println("You awake in an abandoned Town square. What do you do?");
-            System.out.println("1. Explore the mesmorizing Aspens");
-            System.out.println("2. Check your status.");
-            System.out.println("3. Use Health Potion.");
-            System.out.println("4. Save Game.");
-            System.out.println("5. Quit to Main Menue.");
+            System.out.println("\n---------------------------------------");
 
-            System.out.print("Enter your Choice: ");
+            if (playerLocation.equals(LOCATION_TOWN)){
+                System.out.println("You awake in the center of an eerie, abandoned town.");
+                System.out.println("The buildings are crumbling, and nature reclaims the cobble streets.");
+                System.out.println("What do you do?");
 
-            String choice = scanner.nextLine();
+                System.out.println("1. Venture into the dark forest.");
+                System.out.println("2. Find a safe corner to rest in.");
+                System.out.println("3. Check your status.");
+                System.out.println("4. Save Game.");
+                System.out.println("5. Quit to Main Menue.");
+                System.out.print("Enter your choice: ");
 
-            if (choice.equals("1")){
-                exploreForest(player, scanner, random);
-                
+                String choice = scanner.nextLine();
 
-            } else if (choice.equals("2")) {
-                System.out.println("\n---Your Status Is---");
-                System.out.println("Name: " + player.name);
-                System.out.println("Level: " + player.level);
-                System.out.println("Experince Points: " + player.experiencePoints + "/" + player.xpNeedForNextLevel);
-                System.out.println("Health: " + player.health + "/" + player.maxHealth);
-                System.out.println("Attack power: " + player.attackPower);
-                System.out.println("Health Potions: " + player.numHealthPotions);
-                System.out.println("----------------------");
-            }else if (choice.equals("3")){
-                useHealthPotion(player);
-            }else if (choice.equals("4")) {
-                saveGame(player);
-            }else if (choice.equals("5")){
-                System.out.println("Returning to Main Menue...");
-                break;
-            }else {
-                System.out.println("Invalid Choice. Please select 1, 2, 3, or 4.");
+                if (choice.equals("1")){
+                    System.out.println("You leave the safety of the town...");
+                    playerLocation = LOCATION_FOREST;
+                }else if(choice.equals("2")){
+                    System.out.println("You find a dry, shelterd ruin to rest in.");
+                    player.health = player.maxHealth;
+                    System.out.println("You rest for awile and feel your strength return. You are now fully healed.");
+                }else if(choice.equals("3")){
+                    displayPlayerStatus(player);
+                }else if(choice.equals("4")){
+                    saveGame(player);
+                }else if(choice.equals("5")){
+                    System.out.println("Returning to Main Menue...");
+                    break;
+                }else{
+                    System.out.println("Invalid choice");
+                }
+            }else if(playerLocation.equals(LOCATION_FOREST)){
+                System.out.println("You are in the shimmering, dark forest. Strange noises echo around you.");
+                System.out.println("What do you do?");
+                System.out.println("1. Explore deeper for monsters.");
+                System.out.println("2. Use Health Potion.");
+                System.out.println("3. Return to the Abandoned Town.");
+                System.out.print("Enter your choice: ");
+
+                String choice = scanner.nextLine();
+
+                if (choice.equals("1")){
+                    exploreForest(player, scanner, random);
+                }else if (choice.equals("2")){
+                    useHealthPotion(player);
+                }else if(choice.equals("3")){
+                    System.out.println("\nYou escape from the dark forest and enter the old town.");
+                    playerLocation = LOCATION_TOWN;
+                }else{
+                    System.out.println("Invalid Choice");
+                }
             }
-            
         }
 
-        System.out.println("\nThank you for Playing!");
+        System.out.println("Another adventure bekons you...");
+    }
+
+    public static void displayPlayerStatus(Player player){
+        System.out.println("\n--- YOUR STATUS ---");
+        System.out.println("Level: " + player.level);
+        System.out.println("Experience: " + player.experiencePoints + "/" + player.xpNeedForNextLevel);
+        System.out.println("Health: " + player.health + "/" + player.maxHealth);
+        System.out.println("Attack Power: " + player.attackPower);
+        System.out.println("Health Potions: " + player.numHealthPotions);
+        System.out.println("-------------------");
     }
 
     public static void saveGame(Player player){
