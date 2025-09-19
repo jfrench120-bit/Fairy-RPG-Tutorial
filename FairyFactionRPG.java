@@ -13,6 +13,10 @@ class Player{
     int level;
     int experiencePoints;
     int xpNeedForNextLevel;
+    int saltusReputation;
+    int courtOfWhispersReputation;
+    String goblinQuestState;
+    int goblinsDefeatedCount;
 }
 
 class Enemy {
@@ -71,6 +75,10 @@ public class FairyFactionRPG {
         player.level = 1;
         player.experiencePoints = 0;
         player.xpNeedForNextLevel = 100;
+        player.saltusReputation = 0;
+        player.courtOfWhispersReputation = 0;
+        player.goblinQuestState = "NotStarted";
+        player.goblinsDefeatedCount = 0;
         System.out.println("\nWelcome " + player.name + "! Your adventure begins!");
         return player;
 
@@ -91,9 +99,10 @@ public class FairyFactionRPG {
 
                 System.out.println("1. Venture into the dark forest.");
                 System.out.println("2. Find a safe corner to rest in.");
-                System.out.println("3. Check your status.");
-                System.out.println("4. Save Game.");
-                System.out.println("5. Quit to Main Menue.");
+                System.out.println("3. Talk to the nervous Pixie.");
+                System.out.println("4. Check your status.");
+                System.out.println("5. Save Game.");
+                System.out.println("6. Quit to Main Menue.");
                 System.out.print("Enter your choice: ");
 
                 String choice = scanner.nextLine();
@@ -106,10 +115,12 @@ public class FairyFactionRPG {
                     player.health = player.maxHealth;
                     System.out.println("You rest for awile and feel your strength return. You are now fully healed.");
                 }else if(choice.equals("3")){
-                    displayPlayerStatus(player);
+                    talkToPixie(player, scanner);
                 }else if(choice.equals("4")){
-                    saveGame(player);
+                    displayPlayerStatus(player);
                 }else if(choice.equals("5")){
+                    saveGame(player);
+                }else if(choice.equals("6")){
                     System.out.println("Returning to Main Menue...");
                     break;
                 }else{
@@ -141,6 +152,53 @@ public class FairyFactionRPG {
         System.out.println("Another adventure bekons you...");
     }
 
+    public static void talkToPixie(Player player, Scanner scanner){
+        System.out.println("---You approach the nervous Pixie---");
+
+        if (player.goblinQuestState.equals("NotStarted")){
+            System.out.println("Pixie: 'Oh! H-hello there! You're... not a goblin, are you?'");
+            System.out.println("Pixie: 'I'm sorry, I'm just so scared. I need to get back home to the Saltus, but the forest is full of goblins!'");
+            System.out.println("Pixie: 'They never come this far south. It's like something scared them down from the mountains...'");
+            System.out.println("Pixie: 'Could... could you help me? If you could just defeat 3 of them, the path might be clear enough for me to slip by.'");
+            System.out.println("\nAccept the quest?");
+            System.out.println("1. 'Of course. I'll handle the goblins.'");
+            System.out.println("2. 'Sorry, I have other things to do.'");
+            System.out.print("Enter your choice: ");
+            String choice = scanner.nextLine();
+
+            if (choice.equals("1")){
+                player.goblinQuestState = "InProgress";
+                System.out.println("\nPixie: 'Oh, thank you! Thank you so much! Be careful!'");
+            }else{
+                System.out.println("\nPixie: 'Oh... I understand. Please be safe.'");
+            }
+        }else if (player.goblinQuestState.equals("InProgress")){
+            System.out.println("Pixie: 'Please be careful out there! Have you dealt with the goblins yet?'");
+            System.out.println("Pixie: 'You need to defeat " + (3 - player.goblinsDefeatedCount) + " more.'");
+        }else if (player.goblinQuestState.equals("Completed")){
+            System.out.println("Pixie: 'You did it! You really did it! The path is clear!'");
+            System.out.println("Pixie: 'I can finally get home. Thank you, thank you!'");
+
+            int xpReward = 75;
+            int saltusRepReward = 10;
+
+            player.experiencePoints += xpReward;
+            player.saltusReputation += saltusRepReward;
+
+            System.out.println("\n************************************");
+            System.out.println("          QUEST COMPLETED             ");
+            System.out.println("You gained " + xpReward + "XP!");
+            System.out.println("Your reputation with The Saltus has increased by " + saltusRepReward);
+
+            player.goblinQuestState = "Finished";
+        }else if(player.goblinQuestState.equals("Finished")){
+            System.out.println("Pixie: 'Thank you again for your help! The Saltus is in your debt.'");
+            System.out.println("Pixie: 'I hope you'll investigate the disturbance in the mountains someday.'");
+        }
+
+        System.out.println("---------------------------------");
+    }
+
     public static void displayPlayerStatus(Player player){
         System.out.println("\n--- YOUR STATUS ---");
         System.out.println("Level: " + player.level);
@@ -148,6 +206,9 @@ public class FairyFactionRPG {
         System.out.println("Health: " + player.health + "/" + player.maxHealth);
         System.out.println("Attack Power: " + player.attackPower);
         System.out.println("Health Potions: " + player.numHealthPotions);
+        System.out.println("---FACTIONS---");
+        System.out.println("The Saltus: " + player.saltusReputation);
+        System.out.println("The Cout Of Whispers: " + player.courtOfWhispersReputation);
         System.out.println("-------------------");
     }
 
@@ -163,6 +224,10 @@ public class FairyFactionRPG {
             writer.println(player.experiencePoints);
             writer.println(player.xpNeedForNextLevel);
             writer.println(player.numHealthPotions);
+            writer.println(player.saltusReputation);
+            writer.println(player.courtOfWhispersReputation);
+            writer.println(player.goblinQuestState);
+            writer.println(player.goblinsDefeatedCount);
 
             writer.close();
             System.out.println("Saved game successfully!");
@@ -189,6 +254,10 @@ public class FairyFactionRPG {
             loadedPlayer.experiencePoints = Integer.parseInt(fileScanner.nextLine());
             loadedPlayer.xpNeedForNextLevel = Integer.parseInt(fileScanner.nextLine());
             loadedPlayer.numHealthPotions = Integer.parseInt(fileScanner.nextLine());
+            loadedPlayer.saltusReputation = Integer.parseInt(fileScanner.nextLine());
+            loadedPlayer.courtOfWhispersReputation = Integer.parseInt(fileScanner.nextLine());
+            loadedPlayer.goblinQuestState = fileScanner.nextLine();
+            loadedPlayer.goblinsDefeatedCount = Integer.parseInt(fileScanner.nextLine());
 
             fileScanner.close();
 
@@ -312,6 +381,18 @@ public class FairyFactionRPG {
                     
         } else if (enemy.health <= 0) {
             System.out.println("You defeated the " + enemy.name + "!");
+
+            if (player.goblinQuestState.equals("InProgress")){
+                if (enemy.name.contains("Goblin")){
+                    player.goblinsDefeatedCount ++;
+                    System.out.println("You have defeated " + player.goblinsDefeatedCount + "/3 Goblins for the Pixie.");
+
+                    if (player.goblinsDefeatedCount >= 3){
+                        player.goblinQuestState = "Completed";
+                        System.out.println("You have defeated enoguh Goblins, you should speak with the Pixie.");
+                    }
+                }
+            }
             player.experiencePoints += xpValue;
             System.out.println("You gained " + xpValue + "XP!");
             checkForLevelUp(player);
