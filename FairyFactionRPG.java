@@ -17,6 +17,9 @@ class Player{
     int courtOfWhispersReputation;
     String goblinQuestState;
     int goblinsDefeatedCount;
+    int mana;
+    int maxMana;
+    boolean hasLearnedMinorHeal;
 }
 
 class Enemy {
@@ -71,7 +74,7 @@ public class FairyFactionRPG {
         player.maxHealth = 100;
         player.health = player.maxHealth;
         player.attackPower = 15;
-        player.numHealthPotions = 3;
+        player.numHealthPotions = 1;
         player.level = 1;
         player.experiencePoints = 0;
         player.xpNeedForNextLevel = 100;
@@ -79,6 +82,9 @@ public class FairyFactionRPG {
         player.courtOfWhispersReputation = 0;
         player.goblinQuestState = "NotStarted";
         player.goblinsDefeatedCount = 0;
+        player.maxMana = 50;
+        player.mana = player.maxMana;
+        player.hasLearnedMinorHeal = false;
         System.out.println("\nWelcome " + player.name + "! Your adventure begins!");
         return player;
 
@@ -190,6 +196,18 @@ public class FairyFactionRPG {
             System.out.println("You gained " + xpReward + "XP!");
             System.out.println("Your reputation with The Saltus has increased by " + saltusRepReward);
 
+            if (player.saltusReputation >= 1 && !player.hasLearnedMinorHeal){
+                player.hasLearnedMinorHeal = true;
+                System.out.println("\nThe Pixie tosses faint dust over you...");
+                System.out.println("At first nothing happens, then you feel a strange connection to the Pixie and the trees around you...");
+                System.out.println("Pixie: There now all Saltus will know you as freind, however some may take more convincing.");
+                System.out.println("Pixie: It appears you also have an afinity for magic, the more you help the forest, the more the forest helps you.");
+                System.out.println("A faint green light envelops you...");
+                System.out.println("You have learned Minor Heal");
+            }
+
+            checkForLevelUp(player);
+
             player.goblinQuestState = "Finished";
         }else if(player.goblinQuestState.equals("Finished")){
             System.out.println("Pixie: 'Thank you again for your help! The Saltus is in your debt.'");
@@ -204,6 +222,7 @@ public class FairyFactionRPG {
         System.out.println("Level: " + player.level);
         System.out.println("Experience: " + player.experiencePoints + "/" + player.xpNeedForNextLevel);
         System.out.println("Health: " + player.health + "/" + player.maxHealth);
+        System.out.println("Mana: " + player.mana + "/" + player.maxMana);
         System.out.println("Attack Power: " + player.attackPower);
         System.out.println("Health Potions: " + player.numHealthPotions);
         System.out.println("---FACTIONS---");
@@ -228,6 +247,9 @@ public class FairyFactionRPG {
             writer.println(player.courtOfWhispersReputation);
             writer.println(player.goblinQuestState);
             writer.println(player.goblinsDefeatedCount);
+            writer.println(player.mana);
+            writer.println(player.maxMana);
+            writer.println(player.hasLearnedMinorHeal);
 
             writer.close();
             System.out.println("Saved game successfully!");
@@ -258,6 +280,9 @@ public class FairyFactionRPG {
             loadedPlayer.courtOfWhispersReputation = Integer.parseInt(fileScanner.nextLine());
             loadedPlayer.goblinQuestState = fileScanner.nextLine();
             loadedPlayer.goblinsDefeatedCount = Integer.parseInt(fileScanner.nextLine());
+            loadedPlayer.mana = Integer.parseInt(fileScanner.nextLine());
+            loadedPlayer.maxMana = Integer.parseInt(fileScanner.nextLine());
+            loadedPlayer.hasLearnedMinorHeal = Boolean.parseBoolean(fileScanner.nextLine());
 
             fileScanner.close();
 
@@ -279,9 +304,7 @@ public class FairyFactionRPG {
             startCombat(player, scanner, random, "Giant Forest Spider", 50, 12, 50);
         }else{
             System.out.println("You walk through a stunning glade...");
-            System.out.println("You discover someone has left a gift for you...");
-            System.out.println("You find a health potion.");
-            player.numHealthPotions ++;
+            System.out.println("You find nothing of intrest except the rustle of leaves and warmth of the sun.");
         }
 
         
@@ -328,6 +351,55 @@ public class FairyFactionRPG {
         }
     }
 
+    public static void spellBook(Player player, Scanner scanner){
+        System.out.println("\nYou recall the spells you have learned so far...");
+        System.out.println("--------------------------------------------------");
+
+        if (player.hasLearnedMinorHeal){
+            if (player.hasLearnedMinorHeal){
+                System.out.println("> 1. Minor Heal");
+            }
+
+            System.out.println("2. Go back");
+
+            System.out.print("\nEnter your choice: ");
+
+            String choice = scanner.nextLine();
+
+            if (choice.equals("1")){
+                if (player.mana >= 15){
+                    System.out.println("You cast Minor Heal...");
+                    
+                    if (player.health < player.maxHealth){
+                        player.health += 20;
+                        player.mana -= 15;
+
+                        if (player.health > player.maxHealth){
+                            player.health = player.maxHealth;
+                        }
+
+                        System.out.println("Your health is now " + player.health + "/" + player.maxHealth);
+                        System.out.println("Your mana is now " + player.mana + "/" + player.maxMana);
+
+                    }else{
+                        System.out.println("\nYou are already at Max Health.");
+                    }
+
+                }else{
+                    System.out.println("\nYou do not have enough Mana.");
+                }
+
+            }else if (choice.equals("2")){
+                System.out.println("\nYou return to the fight...");
+            }else{
+                System.out.println("\nInvalid Choice.");
+            }
+        }else{
+            System.out.println("\nYou have not learned any spells yet.");
+        }
+        
+    }
+
     public static void startCombat(Player player, Scanner scanner, Random random, String enemyName, int enemyHealth, int enemyAttack, int xpValue){
         System.out.println("\n>You stumble upon a " + enemyName + "!");
 
@@ -345,6 +417,7 @@ public class FairyFactionRPG {
             System.out.println("1. Attack");
             System.out.println("2. Use Health Potion");
             System.out.println("3. Run Away");
+            System.out.println("4. Spells");
             System.out.print("Enter your combat choice: ");
 
             String combatChoice = scanner.nextLine();
@@ -363,6 +436,8 @@ public class FairyFactionRPG {
                 } else {
                     System.out.println("You failed to escape!");
                 }
+            }else if (combatChoice.equals("4")){
+                spellBook(player, scanner);
             }else{
                 System.out.println("Invalid input!");
             }
@@ -382,6 +457,12 @@ public class FairyFactionRPG {
         } else if (enemy.health <= 0) {
             System.out.println("You defeated the " + enemy.name + "!");
 
+            if (random.nextInt(100) < 30){
+                player.numHealthPotions ++;
+                System.out.println("The " + enemyName + " dropped a health potion!");
+                System.out.println("You now have " + player.numHealthPotions + " health potions.");
+            }
+
             if (player.goblinQuestState.equals("InProgress")){
                 if (enemy.name.contains("Goblin")){
                     player.goblinsDefeatedCount ++;
@@ -396,8 +477,6 @@ public class FairyFactionRPG {
             player.experiencePoints += xpValue;
             System.out.println("You gained " + xpValue + "XP!");
             checkForLevelUp(player);
-            player.numHealthPotions ++;
-            System.out.println("You found 1 health potion!");
         } else if (player.health <= 0) {
              System.out.println("You have been defeated by the " + enemy.name + "!");
         }
