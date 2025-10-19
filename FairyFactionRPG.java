@@ -76,6 +76,7 @@ public class FairyFactionRPG {
      * The main entry point of the application. Displays the main menu.
      */
     public static void main(String[] args) {
+        clearScreen();
         Player player; // Declare player object to be used for a new or loaded game.
 
         // Main Menu Loop
@@ -121,6 +122,8 @@ public class FairyFactionRPG {
 
         // The game continues as long as the player is alive.
         while (player.health > 0) {
+            pressEnterToContinue();
+            clearScreen();
             System.out.println("\n---------------------------------------");
 
             // Handle actions based on the player's current location.
@@ -154,6 +157,7 @@ public class FairyFactionRPG {
      * @return The next location for the player, or null to quit to the main menu.
      */
     public static String handleTownActions(Player player) {
+        clearScreen();
         if (player.isFirstVisit) {
         System.out.println("You awake in the center of an eerie, abandoned town.");
         player.isFirstVisit = false; // Set the flag to false after the first visit
@@ -205,6 +209,7 @@ public class FairyFactionRPG {
      * @return The next location for the player.
      */
     public static String handleForestActions(Player player) {
+        clearScreen();
         System.out.println("You are in the shimmering, dark forest. Strange noises echo around you.");
         System.out.println("What do you do?");
         System.out.println("1. Explore deeper for monsters.");
@@ -228,6 +233,11 @@ public class FairyFactionRPG {
                 System.out.println("Invalid Choice.");
                 return LOCATION_FOREST;
         }
+    }
+
+    public static void clearScreen() {
+    System.out.print("\033[H\033[2J");
+    System.out.flush();
     }
 
     // =================================================================================
@@ -353,6 +363,7 @@ public class FairyFactionRPG {
      * @param player The current player object.
      */
     public static void displayPlayerStatus(Player player) {
+        clearScreen();
         System.out.println("\n--- YOUR STATUS ---");
         System.out.println("Level: " + player.level);
         System.out.println("Experience: " + player.experiencePoints + "/" + player.xpNeedForNextLevel);
@@ -430,6 +441,7 @@ public class FairyFactionRPG {
      * @param player The current player object.
      */
     public static void exploreForest(Player player) {
+        clearScreen();
         int encounterRoll = random.nextInt(100); // Roll a number between 0 and 99
 
         if (encounterRoll < 60) { // 60% chance for a Goblin
@@ -451,6 +463,7 @@ public class FairyFactionRPG {
      * @param xpValue     The experience points awarded for defeating the enemy.
      */
     public static void startCombat(Player player, String enemyName, int enemyHealth, int enemyAttack, int xpValue) {
+        clearScreen();
         System.out.println("\n> You stumble upon a " + enemyName + "!");
 
         // Create an enemy for this encounter
@@ -515,6 +528,7 @@ public class FairyFactionRPG {
 
         // --- Post-Combat Resolution ---
         System.out.println("\n---- COMBAT ENDS ----");
+        clearScreen();
 
         if (playerRanAway) {
             // No rewards if the player ran away.
@@ -627,6 +641,7 @@ public class FairyFactionRPG {
      * @param player The current player object.
      */
     public static void talkToPixie(Player player) {
+        clearScreen();
         System.out.println("\n--- You approach the nervous Pixie ---");
 
         switch (player.goblinQuestState) {
